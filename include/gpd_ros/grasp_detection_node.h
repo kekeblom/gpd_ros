@@ -104,6 +104,11 @@ public:
   void run();
 
   /**
+   * \brief Updates the grasp detection workspace from the node parameters.
+   */
+  void updateWorkspace();
+
+  /**
    * \brief Detect grasp poses in a point cloud received from a ROS topic.
    * \return the list of grasp poses
   */
@@ -161,6 +166,7 @@ private:
   int size_left_cloud_; ///< (input) size of the left point cloud (when using two point clouds as input)
   bool has_cloud_, has_normals_, has_samples_; ///< status variables for received (input) messages
   std::string frame_; ///< point cloud frame
+  ros::NodeHandle node_;
   ros::Subscriber cloud_sub_; ///< ROS subscriber for point cloud messages
   ros::Subscriber samples_sub_; ///< ROS subscriber for samples messages
   ros::Publisher grasps_pub_; ///< ROS publisher for grasp list messages

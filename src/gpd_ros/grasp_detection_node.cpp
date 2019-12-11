@@ -10,6 +10,7 @@ const int GraspDetectionNode::CLOUD_SAMPLES = 2; ///< cloud with (x,y,z) samples
 GraspDetectionNode::GraspDetectionNode(ros::NodeHandle& node) : has_cloud_(false), has_normals_(false),
   size_left_cloud_(0), has_samples_(true), frame_(""), use_importance_sampling_(false)
 {
+  node_ = node;
   printf("Init ....\n");
   cloud_camera_ = NULL;
 
@@ -69,7 +70,7 @@ GraspDetectionNode::GraspDetectionNode(ros::NodeHandle& node) : has_cloud_(false
 
   rviz_plotter_ = new GraspPlotter(node, grasp_detector_->getHandSearchParameters().hand_geometry_);
 
-  node.getParam("workspace", workspace_);
+  node_.getParam("workspace", workspace_);
 }
 
 
@@ -80,6 +81,8 @@ void GraspDetectionNode::run()
 
   while (ros::ok()) {
     if (has_cloud_) {
+      updateWorkspace();
+
       // Detect grasps in point cloud.
       std::vector<std::unique_ptr<gpd::candidate::Hand>> grasps = detectGraspPoses();
 
@@ -98,6 +101,11 @@ void GraspDetectionNode::run()
     ros::spinOnce();
     rate.sleep();
   }
+}
+
+void GraspDetectionNode::updateWorkspace() {
+  node_.getParam("workspace", workspace_);
+  grasp_detector_->setWorkspace(workspace_);
 }
 
 
